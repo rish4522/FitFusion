@@ -1,0 +1,111 @@
+
+
+{% block content %}
+
+<style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+  
+    th, td {
+      text-align: left;
+      padding: 8px;
+    }
+  
+    th {
+      background-color: #003399;
+      color: white;
+    }
+  
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+  
+    tr:hover {
+      background-color: #ddd;
+    }
+  
+    .form-group {
+      margin-bottom: 20px;
+    }
+  
+    label {
+      font-weight: bold;
+    }
+  
+    input[type="date"] {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+  
+    button[type="submit"] {
+      background-color: #003399;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  
+    button[type="submit"]:hover {
+      background-color: #001f4d;
+    }
+  </style>
+<h2>Membership Report</h2>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="sdate">Start Date:</label>
+        <input type="date" name="sdate" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="edate">End Date:</label>
+        <input type="date" name="edate" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+</form>
+
+
+    <h3>Membership Report for {{ start_date }} to {{ end_date }}</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Membership Id</th> 
+                <th>User Id</th>
+                <th>Plan Id</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Amount</th>
+                <th>Details</th>
+                <br>
+                <th>Membership Status</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+            {% for membership in mydata %}
+            <tr>
+                <td>{{ membership.0 }}</td>
+                <td>{{ membership.1}}</td>
+                <td>{{ membership.2 }}</td>
+                <td>{{ membership.3 }}</td>
+                <td>{{ membership.4 }}</td>
+                <td>{{ membership.5 }}</td>
+                <td>{{ membership.6 }}</td>
+                <td>{{ membership.7 }}</td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+
+
+
