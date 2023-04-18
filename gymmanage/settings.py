@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'userside',
     'adminapp',
     'trainerapp',
+    'mathfilters',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

@@ -622,7 +622,7 @@ def ViewOrder(request):
     return render(request,'Admin/ViewOrder.html', {'mydata': data})
 
 def OrderEdit(request,id):
-    cur.execute("SELECT * FROM `order_master` WHERE `Order_Id` = {}".format(id))
+    cur.execute("SELECT * FROM `tbl_order_master` WHERE `Order_Id` = {}".format(id))
     data = cur.fetchone()
     #return list(data)
     print(list(data))

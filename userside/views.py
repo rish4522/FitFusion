@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 from django.core.mail import send_mail
 from django.conf import settings
 import os 
-
+import requests
 import datetime
 
 import mysql.connector as mcdb
@@ -88,22 +88,11 @@ def addtocartprocess(request,id):
 
 
 def shopping_cart(request):
-    cur.execute('''SELECT
-    tbl_cart.cart_id
-    , product_master.Product_Name
-    , tbl_cart.product_qty
-    , tbl_cart.product_price
-    
-    , tbl_cart.product_id
-    , tbl_cart.user_id
-FROM
-    product_master
-    INNER JOIN tbl_cart 
-        ON (product_master.product_id = tbl_cart.product_id)''')
+    cur.execute("SELECT tbl_cart.cart_id, product_master.Product_Name, tbl_cart.product_qty, tbl_cart.product_price, tbl_cart.product_id, tbl_cart.user_id FROM product_master INNER JOIN tbl_cart ON (product_master.product_id = tbl_cart.product_id)")
     db_data = cur.fetchall()
-    #return list(data)
     print(list(db_data))
-    return render(request, 'Userside/shopping-cart.html', {'mydata': db_data})  
+    return render(request, 'Userside/shopping-cart.html', {'mydata': db_data})
+
 
 
 def cartdelete(request,id):
@@ -388,7 +377,7 @@ def paymentprocess(request,id):
         mid = id
         mt = request.POST['payment']
         tno = request.POST['Transaction']
-        rec = request.FILES['receipt'].name
+        rec = request.FILES['receipt']
         amt = data[5]
         # try:
         recp = request.FILES['receipt']
@@ -434,11 +423,15 @@ def feedbackaddprocess(request):
     return redirect(feedback)
 
 def placeorderprocess(request):
+    u=request.session['user_id']
     if 'user_id' in request.COOKIES and request.session.has_key('user_id'):
         print(id)
         import datetime
         order_date = datetime.datetime.now().strftime ("%D-%M-%Y")
+        
+        delivery_date =datetime.datetime.now().strftime ("%D-%M-%Y")
         order_status = "Pending"
+        order="Ordered"
         user_id = 1
         #OrderDetails
         cur.execute("INSERT INTO `tbl_order_master`(`order_date`,`order_status`,`user_id`) VALUES ('{}','{}','{}')".format(order_date,order_status,user_id))
@@ -447,7 +440,7 @@ def placeorderprocess(request):
         cur.execute("SELECT * FROM `tbl_cart`")
         db_data = cur.fetchall()
         for row in db_data:
-            print("For Ma aayo")
+           
             cart_id = row[0]
             product_id = row[2]
             product_qty = row[3]
@@ -455,11 +448,15 @@ def placeorderprocess(request):
             cur.execute("INSERT INTO `tbl_order_details`(`order_id`,`product_id`,`product_qty`,`product_price`) VALUES ('{}','{}','{}','{}')".format(order_id,product_id,product_qty,product_price))
             
             conn.commit()
+           
             cur.execute("delete from `tbl_cart` where `cart_id` = {}".format(cart_id))
             conn.commit()
           
         #return list(data)
         print(list(db_data))
+      
+        cur.execute("INSERT INTO `order_master` (`Order_Id`, `User_Id`, `Ord_Date`, `Delivery_Date`, `Delivery_Status`) VALUES ('{}', '{}', '{}', '{}', '{}')".format(order_id,u, order_date, delivery_date,order))
+        conn.commit()
         messages.success(request, 'Record Added!!')
         return redirect(thanks)
     else:
@@ -519,4 +516,23 @@ def UserEditProcess(request,id):
         return redirect('UserEdit', id=uid)
        
     else:
-        return redirect()    
+        return redirect()
+
+def calorietracker(request):
+    import json
+    if request.method=='POST':
+        query=request.POST['query']
+        api_url='https://api.api-ninjas.com/v1/nutrition?query='
+        api_request=requests.get(api_url + query,headers={'X-Api-Key': '/vDiMaIzyj57TW2Iau/6jw==kLTXJxCUDexo1jT9'})
+        try:
+            api=json.loads(api_request.content)
+            print(api_request.content)
+        except Exception as e:
+            api= "oops there was an eroor"
+            print(e)
+        return render(request, 'userside/calorietracker.html',{'api':api})
+    else:
+        return render(request, 'userside/calorietracker.html', {'query': 'enter a valid query'})
+
+
+

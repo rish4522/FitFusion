@@ -90,5 +90,6 @@ urlpatterns = [
     path('UserEdit/edit/<int:id>', views.UserEdit, name="UserEdit"),
     path('UserEditProcess/edit/<int:id>', views.UserEditProcess, name="UserEditProcess"),
 
+    path('calorietracker.html',views.calorietracker,name='calorietracker.html'),
     
 ]

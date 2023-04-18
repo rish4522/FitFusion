@@ -26,5 +26,6 @@ urlpatterns = [
     path('',include('userside.urls')),
     path('myadmin/',include('adminapp.urls')),
      path('trainerapp/',include('trainerapp.urls')),
+
     
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
